@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CETI HELVIDIO NUNES</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --wa-green: #25d366;
+            --bg: #1e293b;
+            --card-bg: #0f172a;
+            --white: #ffffff;
+            --text-gray: #94a3b8;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--white); 
+            display: flex; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- MENU MOBILE --- */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary);
+            padding: 15px;
+            z-index: 100;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            border-right: 1px solid #334155;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar h2 { font-size: 1.1rem; margin-bottom: 30px; color: #60a5fa; text-align: center; font-weight: 800; }
+        .group-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-gray); margin: 20px 0 10px 5px; font-weight: bold; }
+        
+        .nav-btn {
+            display: block; width: 100%; padding: 12px; margin-bottom: 5px; border-radius: 8px;
+            cursor: pointer; transition: 0.3s; font-size: 0.85rem; color: #cbd5e1;
+            background: transparent; border: none; text-align: left;
+        }
+        .nav-btn:hover { background: #334155; }
+        .nav-btn.active { background-color: var(--accent); color: white; }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content { 
+            margin-left: var(--sidebar-width); 
+            width: 100%; 
+            padding: 40px; 
+            transition: 0.3s;
+        }
+
+        header { margin-bottom: 30px; }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+
+        /* --- FORMULÁRIO --- */
+        .form-container {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            border: 1px solid #334155;
+            align-items: end;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 0.7rem; font-weight: bold; color: var(--text-gray); text-transform: uppercase; }
+        
+        input, select {
+            padding: 12px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn-save {
+            background-color: var(--accent); color: white; border: none; padding: 15px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        /* --- TABELA --- */
+        .page { background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid #334155; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { text-align: left; padding: 15px; font-size: 0.7rem; color: var(--text-gray); border-bottom: 1px solid #334155; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #334155; font-size: 0.9rem; vertical-align: middle; }
+
+        /* --- BADGES E BOTÕES --- */
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; display: inline-block; }
+        .badge-merito { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge-adv { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        
+        .btn-whats {
+            background-color: var(--wa-green); color: white; text-decoration: none;
+            padding: 10px 15px; border-radius: 8px; font-size: 0.75rem; font-weight: bold;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+
+        .btn-delete { color: var(--danger); background: none; border: none; cursor: pointer; font-size: 1.2rem; }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 500;
+        }
+
+        /* --- RESPONSIVIDADE (MOBILE) --- */
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 80px 15px 20px 15px; }
+            .overlay.active { display: block; }
+            
+            header h1 { font-size: 1.4rem; }
+            .form-container { grid-template-columns: 1fr; padding: 15px; }
+            .btn-save { width: 100%; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body onload="init()">
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="mobile-header">
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <span style="font-weight: 800; font-size: 0.9rem; color: #60a5fa;">SGE - CETI HN</span>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <h2>CETI HELVIDIO NUNES</h2>
+        <div id="menu-turmas"></div>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1 id="current-turma-title">Selecione uma Turma</h1>
+            <p id="data-atual-display" style="color: var(--text-gray); font-size: 0.9rem;"></p>
+        </header>
+
+        <div class="form-container">
+            <div class="input-group">
+                <label>Aluno</label>
+                <select id="alunoSelect">
+                    <option value="">Escolha a turma...</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Tipo de Registro</label>
+                <select id="ocorrenciaTipo">
+                    <option value="MÉRITO">⭐ Mérito</option>
+                    <option value="ADVERTÊNCIA">⚠️ Advertência</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Descrição</label>
+                <input type="text" id="ocorrenciaDesc" placeholder="Motivo da ocorrência...">
+            </div>
+            <div class="input-group">
+                <label>Data Reunião</label>
+                <input type="date" id="dataReuniao">
+            </div>
+            <div class="input-group">
+                <label>Hora Reunião</label>
+                <input type="time" id="horaReuniao">
+            </div>
+            <button class="btn-save" onclick="salvarRegistro()">REGISTRAR</button>
+        </div>
+
+        <div class="page">
+            <table id="tabelaDados">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Ocorrência</th>
+                        <th>Responsável</th>
+                        <th>Ação</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCorpo"></tbody>
+            </table>
+            <div id="emptyMsg" style="text-align: center; padding: 40px; color: var(--text-gray);">
+                Nenhum registro encontrado para esta turma.
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let turmaAtiva = "";
+        const STORAGE_KEY = 'SGE_CETI_V3_MOBILE';
+
+        const turmasConfig = [
+            { categoria: "1º Ano Médio", nomes: ["1º Ano Dev Sistemas", "1º Ano Energias Renovaveis", "1º Ano Administração"] },
+            { categoria: "2º Ano Médio", nomes: ["2º Ano A Dev Sistemas", "2º Ano B Dev Sistemas", "2º Ano Marketing"] },
+            { categoria: "3º Ano Médio", nomes: ["3º Ano A Manhã", "3º Ano B Manhã", "3º Ano Tarde"] }
+        ];
+
+        const bancoDadosAlunos = {
+            "1º Ano Dev Sistemas": [
+                { nome: "Alailson de Sousa Silva", responsavel: "Maria Onilda de Sousa", tel: "+5589988120756" },
+                { nome: "Alison de Sousa", responsavel: "Ana Jona de Sousa", tel: "+5589999750412" },
+                { nome: "Ana Karolyne Borges adriano", responsavel: "Sandra de Sousa Borges Adriano", tel: "+5589988180291" },
+                { nome: "Ariel Leal da Silva", responsavel: "Maria Filha Leal", tel: "+5586981534035" },
+                { nome: "Arthur Silva Sousa", responsavel: "Cleidiana Maria de Sousa", tel: "+5589981414798" },
+                { nome: "Carlos Eduardo de Sousa Silva", responsavel: "Aparecida Pacheco de Araújo Boges", tel: "+5589981414798" },
+                { nome: "Daniel Araujo Borges", responsavel: "Aparecida Pacheco de Araújo Boges", tel: "+5589981218604" },
+                { nome: "Edinaelson Santana dos Santos Silva", responsavel: "Francidalva Nunes Santana", tel: "+5589981437915" },
+                { nome: "Edson Gomes Bezerra de Souza", responsavel: "Denise Alves Bezerra De Souza", tel: "+5589988157406" },
+                { nome: "Eloizy Borges da Cruz", responsavel: "Edilsa De Sousa Borges", tel: "+5589988056372" },
+                { nome: "Felipe Everton Bezerra Borges", responsavel: "Priscilia De Sousa Bezerra Veloso", tel: "+5589988028600" },
+                { nome: "Francisco Durcival Pereira", responsavel: "Josefa Irene Da Conceição", tel: "+5589988219929" },
+                { nome: "Gean Borges Brito", responsavel: "Alzira Da Silva Borges", tel: "+5589988088376" },
+                { nome: "Guilherme de Moura Sousa", responsavel: "Janecleia De Moura Santos", tel: "+5589981080299" },
+                { nome: "Jose Willy Sousa Santos", responsavel: "Jucilene De Sousa Pereira", tel: "+5589988019803" },
+                { nome: "Kelvy Sousa Sobrinho", responsavel: "Rozineide De Sousa Brito", tel: "+5589981490313" },
+                { nome: "Luiz Fernando Oliveira da Silva", responsavel: "Wanderleia Hilda Da Silva Lopes", tel: "+5589999717817" },
+                { nome: "Maiky de Sousa Borges", responsavel: "Paula Maria De Sousa", tel: "+5589988065365" },
+                { nome: "Marcos Venicius Santos Oliveira", responsavel: "Maria Rita De Jesus Santos", tel: "+558999479986" },
+                { nome: "Maria Sophia Santos Oliveira", responsavel: "Durcinete Da Silva Santos Oliveira", tel: "+5589988068031" },
+                { nome: "Mariana Borges Batista", responsavel: "Regina De Brito Borges", tel: "+5589988284099" },
+                { nome: "Maurilia Brito de Matos", responsavel: "Silvanete De Sousa Brito", tel: "+5589981025345" },
+                { nome: "Milene Holanda Veloso", responsavel: "Maria Leal Holanda", tel: "+55899814458489" },
+                { nome: "Moizes da Silva Sousa", responsavel: "Ivardinete Aldina Da Silva Sousa", tel: "" },
+                { nome: "Paulo Henrique Alves Cavalcante", responsavel: "Edna Alves De Araújo", tel: "+5589981373412" },
+                { nome: "Raelyson Wendent de Sousa Santos", responsavel: "Ijaíde Francisco Da Rocha Silva", tel: "+5589988077859" },
+                { nome: "Rayla Lima de Sousa", responsavel: "Eremita De Sousa Lima", tel: "+5589988180536" },
+                { nome: "Robson dos Santos Sousa", responsavel: "Maria Elineide Dos Santos Sousa", tel: "+5511915655361" },
+                { nome: "Ryanna Pereira Martins", responsavel: "Daiane Pereira Sobrinho", tel: "+5589981271498" },
+                { nome: "Talison de Jesus Santos", responsavel: "Antonia Virginia De Jesus", tel: "+5589981122400" },
+                { nome: "Thais Lacerda Araujo", responsavel: "Marinete De Jesus Lacerda", tel: "" },
+                { nome: "Wallys Vitor Mendes Lima", responsavel: "Marta Leal Lima", tel: "+5589988127686" },
+                { nome: "Wanderson de Sousa Santos", responsavel: "Maria Janaina De Sousa Barros", tel: "+5589981032073" },
+                { nome: "Yago Conrado Moura", responsavel: "Marislândia De Sousa Conrado Moura", tel: "+5589981162487" }     
+            ],
+            "1º Ano Energias Renovaveis": [
+                { nome: "Alexandre de Sousa Silva", responsavel: "Maria Eliane De Oliveira Silva", tel: "+5589988211406" },
+                { nome: "Ariane Pereira", responsavel: "Não Informado", tel: "+5589988219929" },
+                { nome: "Aylla Lara Sousa Moura", responsavel: "Eliana De Sousa Silva França", tel: "+5589988052690" },
+                { nome: "Bruno da Silva Borges", responsavel: "Marli Antônia Da Silva", tel: "+5589981098521" },
+                { nome: "Dayanne Moura Oliveira", responsavel: "Francineide De Sousa Moura Oliveira", tel: "+5589988026351" },
+                { nome: "Denilton Antônio dos Santos", responsavel: "Francisca Isabel Dos Santos", tel: "+5589981053255" },
+                { nome: "Elane Maria de Barros", responsavel: "Maria Aparecida De Barros", tel: "+5589981044919" },
+                { nome: "Emilly de Moura Batista", responsavel: "Keila Monte De Moura Batista", tel: "+5589988245107" },
+                { nome: "Gabriel Brito Sousa", responsavel: "Francileide De Brito Sousa", tel: "+5589988145514" },
+                { nome: "Gabriel Henrique dos Santos Morais", responsavel: "Ana Clede Dos Santos", tel: "+5589988192145" },
+                { nome: "Gloria Jucilende de Sousa", responsavel: "Agenor Jorges De Sousa", tel: "+5589988150887" },
+                { nome: "Italo Guedes de Sousa", responsavel: "Marilene Maria De Sousa", tel: "+5589981469132" },
+                { nome: "Janerson Sousa Silva", responsavel: "Maria Lucilene Do Nascimento Sousa", tel: "+5589981226968" },
+                { nome: "Jeverton de Morais Brito", responsavel: "Maria Anicelda De Morais Brito", tel: "+5589999736549" },
+                { nome: "João Pedro Moura Pinheiro", responsavel: "Paula Beatriz Moura Sousa", tel: "+5589981285181" },
+                { nome: "Jonatas Monteiro Alves da Silva", responsavel: "Mariza De Sousa Monteiro Alves Silva", tel: "+5589981218032" },
+                { nome: "Karine de Sousa Silva", responsavel: "Elizangela De Sousa Silva", tel: "+5589999771297" },
+                { nome: "Kesiane Maria de Barros", responsavel: "Maria Aparecida De Barros", tel: "+5589981044919" },
+                { nome: "Lane kelly Mendes Moura", responsavel: "Rosa De Jesus Mendes Moura", tel: "+5589981181679" },
+                { nome: "Larissa de Sousa Leal", responsavel: "Marilene Antonia De Sousa Brito", tel: "" },
+                { nome: "Maiane Maria Monteiro de Barros", responsavel: "Maria Joana De Jesus Monteiro", tel: "" },
+                { nome: "Marcos Antônio de Lima Santos", responsavel: "Maria De Sousa Lima", tel: "+5589988174936" },
+                { nome: "Marcos Vinícius Ferreira de Brito", responsavel: "Nayane De Brito Sousa", tel: "+5589981348897" },
+                { nome: "Maria Eduarda Sousa Carvalho", responsavel: "Neuede Maria De Sousa", tel: "+5589981959912" },
+                { nome: "Maria Jakeane Andrade Rodrigues", responsavel: "Edineide De Sousa Andrade", tel: "+5589988248508" },
+                { nome: "Mariany Vitória Quirino Fernandes", responsavel: "Maria Gorete Quirino", tel: "+5589981231207" },
+                { nome: "Matheus Ribeiro Neves Santos", responsavel: "Veronica Maria Ribeiro", tel: "" },
+                { nome: "Pietro Brito Sousa", responsavel: "Marinalda Brito Sousa", tel: "+5589988274037" },
+                { nome: "Raykonem Barros Silva", responsavel: "Luzia Barros Silva", tel: "+5589981404401" },
+                { nome: "Raylla Lima Silva", responsavel: "Luana Maria De Lima", tel: "" },
+                { nome: "Renan de Moura Batista", responsavel: "Veronica Maria De Moura", tel: "+5589988212314" },
+                { nome: "Riquelme Rodrigues da Silva Barros", responsavel: "Ediane Silva De Jesus", tel: "+5589988230677" },
+                { nome: "Roberto de Carvalho Andrade", responsavel: "Maria De Deus Carvalho", tel: "+5589988040321" }
+            ],
+            "1º Ano Administração": [
+               { nome: "Alex Borges Bezerra", responsavel: "Letícia Batista Borges", tel: "+5589981488671" },
+               { nome: "Alyson Borges dos Santos", responsavel: "Luciana Borges Da Silva", tel: "+5589988034202" },
+               { nome: "Antônio Henrique Pereira da Silva", responsavel: "Cirlene Pereira Da Silva", tel: "+5589981311294" },
+               { nome: "Carol dos Santos Silva", responsavel: "Adauto Martinho Dos Santos", tel: "+5589981005301" },
+               { nome: "Emilly Barros Lima", responsavel: "Verilene Dos Santos Barros", tel: "+5589988135394" },
+               { nome: "Franciana Morais da Silva", responsavel: "Maria Francisca Ferreira", tel: "+5589981057652" },
+               { nome: "Gabriel Leal Silva", responsavel: "Fabiana Leal De Moura Silva", tel: "+5589988195987" },
+               { nome: "Giovanna Carolina de Almeida Barros", responsavel: "Cleidevania De Almeida Bezerra Barros", tel: "+5589981404268" },
+               { nome: "Heitor Bezerra de Sousa", responsavel: "Nayara Pereira Bezerra", tel: "+5589988090411" },
+               { nome: "Isabela Bezerra da Silva", responsavel: "Lucineia Bezerra Souza Da Silva", tel: "+5511965333584" },
+               { nome: "Kailane Pereira da Silva", responsavel: "Cirlene Pereira Da Silva", tel: "+5589981311294" },
+               { nome: "Kalinny da Silva Sousa", responsavel: "Francislândia Da Silva Sousa", tel: "+5589981311294" },
+               { nome: "Karina Pereira da Silva", responsavel: "Cirlene Pereira Da Silva", tel: "+5589981311294" },
+               { nome: "Karla Mayaea Alves Maciel", responsavel: "Solange Pinheiro Maciel Da Silva", tel: "+5589988188594" },
+               { nome: "Kauan Silva Santos", responsavel: "Valdenia Da Silva Andrade", tel: "+5589988223464" },
+               { nome: "Kauane Oliveira Sousa", responsavel: "Maria Marcia De Oliveira", tel: "+5589981148668" },
+               { nome: "Kelve Pacheco Silva", responsavel: "Roberval Joaquim Da Silva", tel: "+5589988150529" },
+               { nome: "Kyara Vera Luz", responsavel: "Francisca Da Silva Vera", tel: "+5589988223938" },
+               { nome: "Larissa Bezerra Araujo", responsavel: "Marcilene De Sousa Bezerra", tel: "+5589988139265" },
+               { nome: "Lauro Antônio dos Santos", responsavel: "Marcia Do Socorro Antonio", tel: "+5589988172075" },
+               { nome: "Luiz Henrique Barros Fernandes", responsavel: "Gercica De Sousa Barros", tel: "+5589988193513" },
+               { nome: "Marcos Vinicius Fernandes Costa", responsavel: "Ivone Barros Fernandes", tel: "+5589981238733" },
+               { nome: "Mario Junior de Sousa Quirino", responsavel: "Angela Meuri De Sousa Santos", tel: "+5589981126752" },
+               { nome: "Mirelly Alves dos Santos", responsavel: "Maria Lurdes Dos Santos Barros Balbino", tel: "+5589988068878" },
+               { nome: "Naielly Borges Pereira", responsavel: "Elizabete Silva Borges", tel: "+5589981148423" },
+               { nome: "Rafael Lima Pereira", responsavel: "Andréia Rosa De Lima", tel: "+5589988215900" },
+               { nome: "Raila Lima Sousa", responsavel: "Maria José De Lima Santos", tel: "+5589981201840" },
+               { nome: "Raquely de Deus Guedes", responsavel: "Edina Maria De Deus", tel: "+5511954150090" },
+               { nome: "Ravi Borges Farias", responsavel: "Edinaldo Arruda Farias", tel: "+5589988091123" },
+               { nome: "Rhianny da Conceição Sousa", responsavel: "Maria Ana Fernandes De Sousa", tel: "+5589988033176" },
+               { nome: "Sara Santos de Oliveira", responsavel: "Zelinda Santos De Oliveira", tel: "" },
+               { nome: "Thamirys Fernandes Araújo", responsavel: "Maria Fernandes De Barros Araújo", tel: "+5589981145734" },
+               { nome: "Valtania Bezerra de Holanda", responsavel: "Maria Bezerra De Holanda", tel: "+5589988215309" },
+               { nome: "Willy Gonçalves da Silva", responsavel: "Catiene Gonçalves De Sousa", tel: "+558999793004" },
+               { nome: "Yuri Batista Monteiro", responsavel: "Aurineide Batista Monteiro", tel: "+5589988070314" }
+            ],
+            "2º Ano A Dev Sistemas": [
+               { nome: "Adrielly Sousa Moura", responsavel: "Adriana De Lima Sousa", tel: "+5589988079791" },
+               { nome: "Anne Beatriz da Silva Borges", responsavel: "Maria Aparecida Da Silva Sousa", tel: "+5589988112236" },
+               { nome: "Deilany de Jesus Silva", responsavel: "Francisca Suzana De Jesus Silva", tel: "+5589988219547" },
+               { nome: "Eros Damasio Alencar Siqueira", responsavel: "Railâny Moura Silva", tel: "+5589988059212" },
+               { nome: "Esllan Gonçalves Fontes", responsavel: "Reginanda Maria Gonçalves", tel: "+5589988137262" },
+               { nome: "Gustavo Veloso de Moura Gonçalves", responsavel: "Paula Da Cruz Veloso", tel: "+5589988256553" },
+               { nome: "Isaac Bezerra Moura", responsavel: "Leidiana De Sousa Bezerra Moura", tel: "+5589988166196" },
+               { nome: "Isaac Cesar Carvalho Alencar", responsavel: "Eunice Moura Carvalho Alencar", tel: "+5589988012429" },
+               { nome: "Isis Vitória de Moura Veloso", responsavel: "Maria Dos Remédios De Sousa Moura Veloso", tel: "+5589988030931" },
+               { nome: "Italo Moura Batista", responsavel: "Rosilene De Sousa Moura", tel: "+5589988073559" },
+               { nome: "Jonnas Silva Bezerra", responsavel: "Neidivone Maria Da Silva Bezerra", tel: "+5589988277192" },
+               { nome: "Julia de Sousa Silva", responsavel: "Aurinete Joana De Sousa", tel: "+5589981080954" },
+               { nome: "Kimberly Safilly de Araujo Silva", responsavel: "Marivane De Araujo", tel: "+5589999278873" },
+               { nome: "Lucas Pereira de Carvalho", responsavel: "Ingrid Da Silva Pereira", tel: "+5589981386281" },
+               { nome: "Matheus Ferreira Nascimento", responsavel: "Virgene Ferreira Pacheco", tel: "" },
+               { nome: "Nelissa de Fátima Ferreira", responsavel: "Ledileia Pinheiro Ferreira", tel: "+5589988255446" },
+               { nome: "Paulo Victor Bezerra Pacheco", responsavel: "Janice De Sousa Bezerra", tel: "+5589988154545" },
+               { nome: "Ruan Bezerra da Silva", responsavel: "Rosimeire Bezerra De Sousa Silva", tel: "+5589988088016" },
+               { nome: "Renan Leal de Moura", responsavel: "Francisleide Maria Leal", tel: "+5589999771694" },
+               { nome: "Robert Davi Ferreira Leal", responsavel: "Adailma De Sousa Ferreira Leal", tel: "+5589988053360" },
+               { nome: "Saulo Rodrigues Moura", responsavel: "Ana Paula Rodrigues Moura", tel: "+5589988033360" },
+               { nome: "Thayliny dos Santos Alves", responsavel: "Josilene Gonçalves Dos Santos Alves", tel: "+5589998808401" },
+               { nome: "Thaylla Joana Morais Ferreira", responsavel: "Ivan Ferreira Da Silva", tel: "+558998106482" },
+               { nome: "Vinicius da Silva Fernandes", responsavel: "Samires Maria Da Silva", tel: "+5589981285709" },
+               { nome: "Vinycius Andrade Batista", responsavel: "Valquíria Dos Santos Andrade", tel: "+5589988139267" }
+            ],
+            "2º Ano B Dev Sistemas": [
+              { nome: "Anny Rhackelly da Silva", responsavel: "Vanessa Maria De Jesus", tel: "" },
+              { nome: "Cristiano de Moura Silva", responsavel: "Ione Da Silva Pereira", tel: "+5589988173372" },
+              { nome: "Fernanda Ribeiro de Sousa", responsavel: "Alaíde Ribeiro De Sousa", tel: "+5589988241513" },
+              { nome: "Francisco Riquellmy Farias Silva", responsavel: "Jaquiane Maria Farias Silva", tel: "+5589988220782" },
+              { nome: "Geferson Santos Lima", responsavel: "Ed Carlos Francisco De Lima", tel: "+5589988178565" },
+              { nome: "Jennifer Barros", responsavel: "Rosa Maria De Barros", tel: "+5589981336530" },
+              { nome: "Kelly Rodrigues de Sousa", responsavel: "Maria Da Cruz Rodrigues De Brito", tel: "+5589981275931" },
+              { nome: "Laecyo Barros Silva", responsavel: "Clediana De Lima Barros", tel: "+5589981353724" },
+              { nome: "Laiany de Sousa Rocha", responsavel: "Maria Vilani Dos Santos Sousa", tel: "+5589981395025" },
+              { nome: "Lanna Vitória Lima Barros", responsavel: "Amanda De Sousa Lima", tel: "+5589981021789" },
+              { nome: "Luana Maria dos Santos Guedes", responsavel: "Lucineide Maria Dos Santos", tel: "" },
+              { nome: "Luciano Santos Rocha", responsavel: "Francisca Da Silva Santos Rocha", tel: "+5589988347289" },
+              { nome: "Maike Santos da Silva", responsavel: "Patrícia Zilma Dos Santos Sobrinho", tel: "+5589988092227" },
+              { nome: "Marcos Antônio Leal", responsavel: "Givanilda Otilia Da Silva Leal", tel: "+5589981055473" },
+              { nome: "Matheus Deryk de Moura Borges Sá", responsavel: "Marília Borges Cândido Sá", tel: "+5589988178500" },
+              { nome: "Melissa Carvalho de Sousa", responsavel: "Antonia De Jesus Carvalho", tel: "+5589999733460" },
+              { nome: "Rafael Pinheiro Araújo", responsavel: "Maria Do Rosário Da Conceição", tel: "+5589988144769" },
+              { nome: "Rafaela Moura Batista", responsavel: "Rosa Maria Moura Silva", tel: "+5589988212452" },
+              { nome: "Rangel dos Santos Sousa", responsavel: "Maria Elineide Dos Santos Sousa", tel: "+5511915655361" },
+              { nome: "Ronaldo Moura Sousa", responsavel: "Waldireny Da Silva Moura Sousa", tel: "+5589981178352" },
+              { nome: "Vitória de Sousa Santos Silva", responsavel: "Ivanete De Sousa Santos Silva", tel: "+5589981112415" }
+            ],
+            "2º Ano Marketing": [
+             { nome: "Ana Beatris da Silva Lopes", responsavel: "Marli Francisca Da Silva Lopes", tel: "+5589988193731" },
+             { nome: "Ana Carolina Batista Santos", responsavel: "Leiliene De Sousa Batista", tel: "+5589988097764" },
+             { nome: "Ana Leticia Santos da Silva", responsavel: "Maria Avani Da Silva Santos", tel: "+5589981157922" },
+             { nome: "Bianca Santos Pereira", responsavel: "Maria Edilanja Dos Santos Carvalho", tel: "+5589981024734" },
+             { nome: "David Raniel Bezerra Lima", responsavel: "Rayla Colares Bezerra", tel: "+5589988136901" },
+             { nome: "Derik Liborio de Sousa", responsavel: "Lídia De Sousa Libório", tel: "+5589981382167" },
+             { nome: "Derilene Pereira dos Santos", responsavel: "Eremita Rosa Santos", tel: "+5589981435133" },
+             { nome: "Dorisvelton dos Santos Liborio", responsavel: "Aldenora Helena Adelina Dos Santos", tel: "+5589981212627" },
+             { nome: "Emilly da Silva Alves", responsavel: "Aldenir Lúcia Da Silva", tel: "+5589981265446" },
+             { nome: "Felipe Araujo da Silva", responsavel: "Maria Da Conceição Araújo", tel: "+5589981181896" },
+             { nome: "Gabriela Rocha de Sousa", responsavel: "Joana Da Conceição Rocha", tel: "+5589981445505" },
+             { nome: "Jose Henrique da Silva Sousa", responsavel: "Edilene De Sousa Silva", tel: "+5589981386078" },
+             { nome: "Lívia Sousa Leal", responsavel: "Luzileny Barros De Sousa Mendes", tel: "+5589981260987" },
+             { nome: "Luan Silva Pacheco", responsavel: "Silvania Ribeiro Da Silva", tel: "+5589988011012" },
+             { nome: "Luanderson Balbino Sobrinho", responsavel: "Luana Dos Santos Balbino", tel: "+5589988222073" },
+             { nome: "Maria Eduarda dos Santos", responsavel: "Islandia Isabel Dos Santos", tel: "+5511986015297" },
+             { nome: "Maria Vanessa Batista Lima", responsavel: "Deulima Dos Santos Batista", tel: "+5589999813881" },
+             { nome: "Maria Vitória de Araújo Sousa", responsavel: "Neila Maria De Araujo", tel: "+558999738825" },
+             { nome: "Mariane de Sousa Silva", responsavel: "Rosa Maria De Sousa Rocha", tel: "+5589988120479" },
+             { nome: "Marianny Rodrigues de Moura Sousa", responsavel: "Marisangela Rodrigues De Moura Sousa", tel: "+5589988028487" },
+             { nome: "Naira da Silva Santos", responsavel: "Alaíde Lúcia Da Silva Santos", tel: "+558999824549" },
+             { nome: "Pedro Henrique da Silva Venção", responsavel: "Aliksandra De Brito Silva Venção", tel: "+5589981037972" },
+             { nome: "Raissa Alves da Silva", responsavel: "Dalvani Francisca Da Silva", tel: "+558999245081" },
+             { nome: "Tainara da Silva Barros", responsavel: "Leidiane Da Silva Barros", tel: "+5589981088020" },
+             { nome: "Taynara Lemos Silva", responsavel: "Daiane De Jesus Lemos", tel: "+5589988174161" },
+             { nome: "Veronica de Morais Santos", responsavel: "Ireni Maria De Morais", tel: "+5589988184139" },
+             { nome: "Vitória Borges da Silva", responsavel: "Roze Borges Silva", tel: "+5589988184139" }
+            ],
+            "3º Ano A Manhã": [
+               { nome: "Aiadny da Silva Santos", responsavel: "Adaíma da Silva Santos", tel: "+5589988185045" },
+               { nome: "Carlos Henrique de Moura Borges", responsavel: "Maria Dalva de Moura", tel: "+5589988192399" },
+               { nome: "Cawilly Gonçalves da Silva", responsavel: "Catiane Gonçalves de Sousa", tel: "+5589999793004" },
+               { nome: "Evelly de Sousa Silva", responsavel: "Elizangela de Sousa Silva", tel: "" },
+               { nome: "Everton de Sousa Pacheco", responsavel: "Elaine de Sousa Borges Pachêco", tel: "+5589988099981" },
+               { nome: "Gustavo Moura Leal", responsavel: "Lucinete de Sousa Moura", tel: "+5589981358480" },
+               { nome: "José Arthur dos Santos Jermano", responsavel: "Ana Célia dos Santos", tel: "+5589988220858" },
+               { nome: "Jose Victor Moura Santos", responsavel: "Maria de Moura Leal", tel: "+5589981198412" },
+               { nome: "Julio Cesar Barbosa Bezerra Marques", responsavel: "Josilene de Sousa Bezerra", tel: "+5589988035260" },
+               { nome: "Khiury Ferreira dos Santos", responsavel: "Michelle de Sousa Ferreira", tel: "+5589988128522" },
+               { nome: "Lara Leal Borges", responsavel: "Márcia Leal da Silva Borges", tel: "+5589981249173" },
+               { nome: "Laura Ruane Alves da Rocha", responsavel: "Vandia de Sousa Alves", tel: "+5589981445720" },
+               { nome: "Lilian Maria Ferreira", responsavel: "Ledileia Pinheiro Ferreira Barros", tel: "+5589988049237" },
+               { nome: "Lucas Bezerra Matos", responsavel: "Edilete de Sousa Bezerra", tel: "+5589988078612" },
+               { nome: "Luciely Vitoria Silva Guedes", responsavel: "Lucilenes da Silva Borges", tel: "+5589988188683" },
+               { nome: "Maria Clara da Silva Martins", responsavel: "Rubenice dos Santos Silva Martins", tel: "+5589981325828" },
+               { nome: "Maria Clara da Silva Martirios", responsavel: "Elenícia da Silva Santos", tel: "+5589988018816" },
+               { nome: "Mateus Pinheiro da Silva", responsavel: "Solange Pinheiro Maciel da Silva", tel: "+5589988188594" },
+               { nome: "Mizael de Sousa Silva", responsavel: "Marcilândia de Sousa Moura", tel: "+5589981480244" },
+               { nome: "Rai da Silva Borges", responsavel: "Margarete da Silva Pinheiro Borges", tel: "+5589988117951" },
+               { nome: "Rayssa Kelly Libario Gonçalves", responsavel: "Antonia Érica Libório", tel: "+5589988026012" },
+               { nome: "Sheylla da Silva Borges", responsavel: "Iraneide da Silva Xavier Borges", tel: "+5589981087360" },
+               { nome: "Thayla Bezerra Silva", responsavel: "Maria Marlene Bezerra Cordeiro Silva", tel: "+5589988113865" },
+               { nome: "Vitória Lara de Moura Silva", responsavel: "Lusinete Maria de Moura Silva", tel: "+5589981458063" }
+            ],
+            "3º Ano B Manhã": [
+               { nome: "Airton de Araújo da Silva", responsavel: "Marciana de Moura Araújo", tel: "+5589988055014" },
+               { nome: "Alice de Sousa Silva", responsavel: "Maria Eliane de Oliveira Silva", tel: "+5589988211406" },
+               { nome: "Antonia Elissandra Sousa Leal", responsavel: "Genival de Sousa Leal", tel: "+5589988113428" },
+               { nome: "Antonio Henrique da Silva Rocha", responsavel: "Iranilda da Silva Rocha", tel: "+5589988148084" },
+               { nome: "Daniel Veloso Araújo", responsavel: "Vanda de Lima Veloso", tel: "+5589988028761" },
+               { nome: "Eduardo Luiz de Sousa", responsavel: "Rosângela Francisca de Sousa", tel: "+5589981378171" },
+               { nome: "Emanoel Dias Santos", responsavel: "Francilene Pereira Dias", tel: "+5589988181564" },
+               { nome: "Fernando dos Santos Rocha", responsavel: "Francineide Maria das Dores Santos", tel: "+5589988123850" },
+               { nome: "Francisca Ana Cristina dos Santos Veloso", responsavel: "Maria Marcelina dos Santos", tel: "+5589999308146" },
+               { nome: "Gustavo Batista Carvalho", responsavel: "Eliane da Silva Batista", tel: "+5589988189613" },
+               { nome: "Janiele de Sousa Freitas", responsavel: "Darlene de Sousa Rocha Freitas", tel: "+5589999822599" },
+               { nome: "Katia da Silva Fernandes", responsavel: "Maria Inês da Silva", tel: "" },
+               { nome: "Kawe da Silva Santos", responsavel: "Joilson da Silva Santos", tel: "+5589988039805" },
+               { nome: "Kawelly Santos Nascimento", responsavel: "Claudilene de Sousa Santos", tel: "+5589988051486" },
+               { nome: "Laecio Sousa Moura", responsavel: "Lucimar Engrácio de Moura", tel: "+5589988079791" },
+               { nome: "Laiz Fernandes de Sousa", responsavel: "Eliene Nunes Fernandes", tel: "+5589981483492" },
+               { nome: "Luize Vitoria de Sousa Lima", responsavel: "Raimunda Maria de Lima", tel: "+5589988253533" },
+               { nome: "Luiza da Silva Santos", responsavel: "Alaide Lucia da Silva Santos", tel: "+5589981090650" },
+               { nome: "Maria Emanuelly de Brito Araújo", responsavel: "Carlene Maria de Brito Araújo", tel: "+5589988090596" },
+               { nome: "Maria Tereza dos Santos Sousa", responsavel: "Gonsala Maria dos Santos Sousa", tel: "+5589994326994" },
+               { nome: "Mislane Andrade de Sousa", responsavel: "Valtania da Silva Andrade", tel: "+5589981362823" },
+               { nome: "Renan Silva Santos", responsavel: "Maria Francisca dos Santos", tel: "+5589988224359" },
+               { nome: "Rhallen Fernandes Barbosa", responsavel: "Jocileia dos Santos Fernandes", tel: "+5589981199824" },
+               { nome: "Ruan Ribeiro de Sousa", responsavel: "Marislândia Maria Ribeiro", tel: "" },
+               { nome: "Vitor Manoel Borges dos Santos", responsavel: "Eremita Maria Borges", tel: "+5589988150833" }
+            ],
+            "3º Ano Tarde": [
+               { nome: "Ariane Leal da Silva", responsavel: "Maria Filha Leal", tel: "+5589981534035" },
+               { nome: "Camila de Sousa Bezerra", responsavel: "Jocielton Bezerra Gonçalves", tel: "+5589981383150" },
+               { nome: "Danilo de Sousa Pereira", responsavel: "Elisangela Maria de Sousa", tel: "+5511966619677" },
+               { nome: "David Andrade de Sousa", responsavel: "Lindonesa Maria de Sousa Andrade", tel: "+5589981224597" },
+               { nome: "Enzo Gabriel Alencar Silva", responsavel: "Mercia Sousa Alencar Silva", tel: "+5589988191776" },
+               { nome: "Geovane dos Santos Pereira", responsavel: "Gerlândia dos Santos Pereira", tel: "+5589981060347" },
+               { nome: "Helloisy Santos Silva", responsavel: "Edna Gonçalves Santos", tel: "+5589988214552" },
+               { nome: "Joice Kelly dos Santos", responsavel: "Janiquecia Maria Filha", tel: "+5589988061285" },
+               { nome: "Jonas de Sousa Nascimento", responsavel: "Joana de Lima Sousa", tel: "+5589981095619" },
+               { nome: "Kayla José de Carvalho", responsavel: "Maria de Jesus de Sousa Carvalho", tel: "+5589988082700" },
+               { nome: "Kaynara Veloso Fernandes", responsavel: "Não Informado", tel: "" },
+               { nome: "Lailson de Lima Sousa", responsavel: "Edilene Cicera de Lima Sousa", tel: "+5589988331779" },
+               { nome: "Maiara de Sousa Silva", responsavel: "Luiz Carlos da Silva", tel: "+5589988120479" },
+               { nome: "Marcos Alen Pacheco de Morais", responsavel: "Marinete de Lima Pachêco", tel: "+5589988245945" },
+               { nome: "Maria da Glória de Sousa Santos", responsavel: "Francisca de Sousa Santos", tel: "" },
+               { nome: "Maria dos Milagres Batista Borges", responsavel: "Josefa Deusdete Batista", tel: "+5589988215567" },
+               { nome: "Maria Eduarda da Silva Santos", responsavel: "Antoninha Raimunda da Silva", tel: "+5589988278928" },
+               { nome: "Maria Pereira de Sousa", responsavel: "Valtânia de Jesus Ferreira", tel: "+558994151502" },
+               { nome: "Maria Giovana da Rocha Santos", responsavel: "Francisca Adonilia da Rocha Santos", tel: "+5589988275741" },
+               { nome: "Maria Vitória de Sousa Santos", responsavel: "Francisca de Sousa Santos", tel: "" },
+               { nome: "Mariane Ribeiro dos Santos", responsavel: "Veronica Ribeiro dos Santos", tel: "" },
+               { nome: "Otávio da Silva Sousa", responsavel: "Terezinha Antonia da Silva", tel: "" },
+               { nome: "Rafael da Conceição Silva", responsavel: "Maria Ilena da Conceição Silva", tel: "+5589981454594" },
+               { nome: "Thaynara da Silva Sousa", responsavel: "Francislândia da Silva Sousa", tel: "+558999295856" },
+               { nome: "Ticiane Borges Bezerra", responsavel: "Jucicleia Maria Borges", tel: "+5589981155988" },
+               { nome: "Yandara Marcia dos Santos", responsavel: "Marcia do Socorro Antonio", tel: "+5589988172075" },
+               { nome: "Yasmin Batista Monteiro", responsavel: "Aurineide de Batista Monteiro", tel: "+5589988070314" }
+            ]
+        };
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function init() {
+            renderMenu();
+            updateDataDisplay();
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ registros: {} }));
+            }
+        }
+
+        function updateDataDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('data-atual-display').innerText = new Date().toLocaleDateString('pt-BR', options);
+        }
+
+        function renderMenu() {
+            const menu = document.getElementById('menu-turmas');
+            menu.innerHTML = "";
+            turmasConfig.forEach(grupo => {
+                const header = document.createElement('div');
+                header.className = 'group-title';
+                header.innerText = grupo.categoria;
+                menu.appendChild(header);
+
+                grupo.nomes.forEach(nome => {
+                    const btn = document.createElement('button');
+                    btn.className = 'nav-btn';
+                    btn.innerText = nome;
+                    btn.onclick = () => {
+                        selecionarTurma(nome, btn);
+                        if(window.innerWidth < 768) toggleMenu();
+                    };
+                    menu.appendChild(btn);
+                });
+            });
+        }
+
+        function selecionarTurma(nome, btnElement) {
+            turmaAtiva = nome;
+            document.getElementById('current-turma-title').innerText = nome;
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            const select = document.getElementById('alunoSelect');
+            select.innerHTML = '<option value="">Escolha um aluno...</option>';
+            
+            const alunos = bancoDadosAlunos[nome] || [];
+            alunos.forEach(aluno => {
+                const opt = document.createElement('option');
+                opt.value = aluno.nome;
+                opt.innerText = aluno.nome;
+                select.appendChild(opt);
+            });
+            renderizarTabela();
+        }
+
+        function salvarRegistro() {
+            if(!turmaAtiva) return alert("Selecione uma turma primeiro!");
+            
+            const inputs = {
+                nome: document.getElementById('alunoSelect').value,
+                desc: document.getElementById('ocorrenciaDesc').value,
+                tipo: document.getElementById('ocorrenciaTipo').value,
+                dataR: document.getElementById('dataReuniao').value,
+                horaR: document.getElementById('horaReuniao').value
+            };
+            
+            if (!inputs.nome || !inputs.desc) return alert("Preencha o aluno e o motivo!");
+
+            const alunoDados = bancoDadosAlunos[turmaAtiva].find(a => a.nome === inputs.nome);
+            let storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"registros": {}}');
+            
+            if (!storage.registros[turmaAtiva]) storage.registros[turmaAtiva] = [];
+
+            storage.registros[turmaAtiva].push({
+                id: Date.now(),
+                nome: inputs.nome,
+                tipo: inputs.tipo,
+                desc: inputs.desc, 
+                resp: alunoDados ? alunoDados.responsavel : "Não Informado", 
+                tel: alunoDados ? alunoDados.tel : "", 
+                dataReuniao: inputs.dataR, 
+                horaReuniao: inputs.horaR
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+            resetForm();
+            renderizarTabela();
+        }
+
+        function resetForm() {
+            document.getElementById('ocorrenciaDesc').value = "";
+            document.getElementById('dataReuniao').value = "";
+            document.getElementById('horaReuniao').value = "";
+            document.getElementById('alunoSelect').selectedIndex = 0;
+        }
+
+        function renderizarTabela() {
+            if(!turmaAtiva) return;
+            const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"registros": {}}');
+            const registros = storage.registros[turmaAtiva] || [];
+            const corpo = document.getElementById('tabelaCorpo');
+            const emptyMsg = document.getElementById('emptyMsg');
+
+            corpo.innerHTML = "";
+            emptyMsg.style.display = registros.length ? "none" : "block";
+
+            registros.forEach(reg => {
+                const tr = document.createElement('tr');
+                const cleanTel = reg.tel ? reg.tel.replace(/\D/g,'') : "";
+                
+                let whatsReuniao = "";
+                if(reg.dataReuniao && reg.horaReuniao) {
+                    const dataBr = reg.dataReuniao.split('-').reverse().join('/');
+                    whatsReuniao = ` Solicitamos sua presença na escola no dia ${dataBr} às ${reg.horaReuniao} para tratarmos do assunto.`;
+                }
+
+                const msgWhats = encodeURIComponent(`Olá, ${reg.resp}. Registro de ${reg.tipo} para o aluno(a) ${reg.nome} no CETI Helvidio Nunes. Motivo: ${reg.desc}.${whatsReuniao}`);
+                const waLink = cleanTel ? `https://wa.me/${cleanTel}?text=${msgWhats}` : "#";
+
+                tr.innerHTML = `
+                    <td><b>${reg.nome}</b></td>
+                    <td><span class="badge ${reg.tipo === 'MÉRITO' ? 'badge-merito' : 'badge-adv'}">${reg.tipo}</span><br><small>${reg.desc}</small></td>
+                    <td>${reg.resp}</td>
+                    <td>
+                        ${cleanTel ? `<a href="${waLink}" target="_blank" class="btn-whats">WHATSAPP</a>` : '<small style="color:red">Sem tel</small>'}
+                    </td>
+                    <td><button class="btn-delete" onclick="deletar(${reg.id})">🗑️</button></td>
+                `;
+                corpo.appendChild(tr);
+            });
+        }
+
+        function deletar(id) {
+            if(!confirm("Remover este registro?")) return;
+            let storage = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            storage.registros[turmaAtiva] = storage.registros[turmaAtiva].filter(r => r.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+            renderizarTabela();
+        }
+</script>
+</body>
+</html>   
